@@ -17,11 +17,12 @@
 
 package guru.sfg.brewery.web.mappers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+
 import guru.sfg.brewery.domain.BeerOrderLine;
 import guru.sfg.brewery.repositories.BeerRepository;
 import guru.sfg.brewery.web.model.BeerOrderLineDto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMapper {
     private BeerRepository beerRepository;
@@ -48,7 +49,7 @@ public abstract class BeerOrderLineMapperDecorator implements BeerOrderLineMappe
     @Override
     public BeerOrderLine dtoToBeerOrderLine(BeerOrderLineDto dto) {
         BeerOrderLine beerOrderLine = beerOrderLineMapper.dtoToBeerOrderLine(dto);
-        beerOrderLine.setBeer(beerRepository.getOne(dto.getBeerId()));
+        beerOrderLine.setBeer(beerRepository.getReferenceById(dto.getBeerId()));
         beerOrderLine.setQuantityAllocated(0);
         return beerOrderLine;
     }

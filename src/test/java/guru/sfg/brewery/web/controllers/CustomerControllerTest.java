@@ -17,8 +17,23 @@
 
 package guru.sfg.brewery.web.controllers;
 
-import guru.sfg.brewery.domain.Customer;
-import guru.sfg.brewery.repositories.CustomerRepository;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -30,16 +45,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import guru.sfg.brewery.domain.Customer;
+import guru.sfg.brewery.repositories.CustomerRepository;
 
 @ExtendWith(MockitoExtension.class)
 class CustomerControllerTest {
@@ -75,7 +82,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("customers/findCustomers"))
                 .andExpect(model().attributeExists("customer"));
-        verifyZeroInteractions(customerRepository);
+        verifyNoInteractions(customerRepository);
     }
 //ToDO: Fix stubbing error
     @Test
@@ -104,7 +111,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("customers/createCustomer"))
                 .andExpect(model().attributeExists("customer"));
-        verifyZeroInteractions(customerRepository);
+        verifyNoInteractions(customerRepository);
     }
 
     @Test
@@ -124,7 +131,7 @@ class CustomerControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("customers/createOrUpdateCustomer"))
                 .andExpect(model().attributeExists("customer"));
-        verifyZeroInteractions(customerRepository);
+        verifyNoInteractions(customerRepository);
     }
 
     @Test
