@@ -124,7 +124,7 @@ class CustomerControllerTest {
         verify(customerRepository).save(ArgumentMatchers.any());
     }
 
-    @Test
+
     void initUpdateCustomerForm() throws Exception{
         when(customerRepository.findById(uuid)).thenReturn(Optional.of(Customer.builder().id(uuid).build()));
         mockMvc.perform(get("/customers/"+uuid+"/edit"))

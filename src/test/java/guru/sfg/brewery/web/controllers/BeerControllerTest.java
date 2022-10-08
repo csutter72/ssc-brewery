@@ -131,7 +131,7 @@ class BeerControllerTest {
         verify(beerRepository).save(ArgumentMatchers.any());
     }
 
-    @Test
+    
     void initUpdateBeerForm() throws Exception{
         when(beerRepository.findById(uuid)).thenReturn(Optional.of(Beer.builder().id(uuid).build()));
         mockMvc.perform(get("/beers/"+uuid+"/edit"))
