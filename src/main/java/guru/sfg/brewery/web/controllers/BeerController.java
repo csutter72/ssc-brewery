@@ -18,10 +18,11 @@
 package guru.sfg.brewery.web.controllers;
 
 
-import guru.sfg.brewery.domain.Beer;
-import guru.sfg.brewery.repositories.BeerInventoryRepository;
-import guru.sfg.brewery.repositories.BeerRepository;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.UUID;
+
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -34,9 +35,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.validation.Valid;
-import java.util.List;
-import java.util.UUID;
+import guru.sfg.brewery.domain.Beer;
+import guru.sfg.brewery.repositories.BeerInventoryRepository;
+import guru.sfg.brewery.repositories.BeerRepository;
+import guru.sfg.brewery.web.model.BeerStyleEnum;
+import lombok.RequiredArgsConstructor;
 
 
 @RequiredArgsConstructor
@@ -88,6 +91,7 @@ public class BeerController {
     @GetMapping("/new")
     public String initCreationForm(Model model) {
         model.addAttribute("beer", Beer.builder().build());
+        model.addAttribute("beerStyleEnum", BeerStyleEnum.values());
         return "beers/createBeer";
     }
 
