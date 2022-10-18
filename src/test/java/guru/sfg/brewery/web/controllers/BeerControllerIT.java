@@ -19,13 +19,13 @@ public class BeerControllerIT extends BaseIT {
     @Test
     void initCreationForm() throws Exception {
         mockMvc.perform(get("/beers/new").with(httpBasic("user", "password")))
-            .andExpect(status().isOk())
-            .andExpect(view().name("beers/createBeer"))
-            .andExpect(model().attributeExists("beer"));
+                .andExpect(status().isOk())
+                .andExpect(view().name("beers/createBeer"))
+                .andExpect(model().attributeExists("beer"));
     }
 
     @Test
-    void findBeers() throws Exception{
+    void findBeers() throws Exception {
         mockMvc.perform(get("/beers/find"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))
@@ -33,8 +33,8 @@ public class BeerControllerIT extends BaseIT {
     }
 
     @Test
-    void findBeersWithHttpBasic() throws Exception{
-        //mockMvc.perform(get("/beers/find").with(httpBasic("spring", "pwd")))
+    void findBeersWithHttpBasic() throws Exception {
+        // mockMvc.perform(get("/beers/find").with(httpBasic("spring", "pwd")))
         mockMvc.perform(get("/beers/find").with(anonymous()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("beers/findBeers"))

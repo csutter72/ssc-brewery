@@ -8,10 +8,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import guru.sfg.brewery.security.CustomPasswordEncoderFactories;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -41,24 +42,25 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        //return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        return CustomPasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
     
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
 
         UserDetails admin = User.withUsername("spring")
-                                .password(passwordEncoder().encode("pwd"))
+                                .password(passwordEncoder.encode("pwd"))
                                 .roles("ADMIN")
                                 .build();
         
         UserDetails user = User.withUsername("user")
-                                .password(passwordEncoder().encode("password"))
+                                .password(passwordEncoder.encode("password"))
                                 .roles("USER")
                                 .build();
         
-        UserDetails customer = User.withUsername("Scott")
-                                    .password(passwordEncoder().encode("tiger"))
+        UserDetails customer = User.withUsername("scott")
+                                    .password(passwordEncoder.encode("tiger"))
                                     .roles("CUSTOMER")
                                     .build();
 
