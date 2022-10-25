@@ -16,20 +16,33 @@
  */
 package guru.sfg.brewery.bootstrap;
 
-import guru.sfg.brewery.domain.*;
-import guru.sfg.brewery.repositories.*;
-import guru.sfg.brewery.web.model.BeerStyleEnum;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
 import java.util.Set;
 import java.util.UUID;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import guru.sfg.brewery.domain.Beer;
+import guru.sfg.brewery.domain.BeerInventory;
+import guru.sfg.brewery.domain.BeerOrder;
+import guru.sfg.brewery.domain.BeerOrderLine;
+import guru.sfg.brewery.domain.Brewery;
+import guru.sfg.brewery.domain.Customer;
+import guru.sfg.brewery.domain.OrderStatusEnum;
+import guru.sfg.brewery.repositories.BeerInventoryRepository;
+import guru.sfg.brewery.repositories.BeerOrderRepository;
+import guru.sfg.brewery.repositories.BeerRepository;
+import guru.sfg.brewery.repositories.BreweryRepository;
+import guru.sfg.brewery.repositories.CustomerRepository;
+import guru.sfg.brewery.web.model.BeerStyleEnum;
+import lombok.RequiredArgsConstructor;
 
 
 /**
  * Created by jt on 2019-01-26.
  */
+@Order(value=1)
 @RequiredArgsConstructor
 @Component
 public class DefaultBreweryLoader implements CommandLineRunner {
