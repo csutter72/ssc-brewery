@@ -2,7 +2,6 @@ package guru.sfg.brewery.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -43,18 +42,19 @@ public class SecurityConfig {
                         "/login", 
                         "/resources/**").permitAll()
                     .antMatchers("/h2-console/**").permitAll()    
-                    .antMatchers("/beers*").permitAll()
-                    .antMatchers("/beers/find").hasAnyRole("CUSTOMER", "ADMIN", "USER")
+                    //.antMatchers("/beers*").permitAll()
+                    //.antMatchers("/beers/find").hasAnyRole("CUSTOMER", "ADMIN", "USER")
 
-                    .antMatchers(HttpMethod.GET, "/api/v1/beer*").hasAnyRole("CUSTOMER", "ADMIN", "USER")
+                    //.antMatchers(HttpMethod.GET, "/api/v1/beer*").hasAnyRole("CUSTOMER", "ADMIN", "USER")
 
-                    //.mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll()
+                    //.mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").hasAnyRole("CUSTOMER", "ADMIN", "USER")
 
                     //.mvcMatchers(HttpMethod.DELETE, "/api/v1/beer/**").hasRole("ADMIN")
                     
 
-                    .mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries/**").hasAnyRole("CUSTOMER", "ADMIN")
-                    .mvcMatchers( "/brewery/breweries/**").hasAnyRole("CUSTOMER", "ADMIN")
+                    //.mvcMatchers(HttpMethod.GET, "/brewery/api/v1/breweries").hasAnyRole("CUSTOMER", "ADMIN")
+                    //.mvcMatchers( "/brewery/breweries").hasAnyRole("CUSTOMER", "ADMIN")
+
                     .anyRequest().authenticated();  
             })
             .csrf().disable()

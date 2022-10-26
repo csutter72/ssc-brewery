@@ -50,7 +50,7 @@ public class JpaUserDetailsService implements UserDetailsService {
 
         if(authorities != null && authorities.size() > 0) {
             for (Authority authority : authorities) {
-                grantedAuthorities.add(new SimpleGrantedAuthority(authority.getRole()));
+                grantedAuthorities.add(new SimpleGrantedAuthority(authority.getPermission()));
             };
         } 
 

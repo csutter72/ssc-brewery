@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.transaction.Transactional;
+import java.util.Set;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
@@ -13,8 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import guru.sfg.brewery.domain.security.Authority;
+import guru.sfg.brewery.domain.security.Role;
 import guru.sfg.brewery.domain.security.User;
 import guru.sfg.brewery.repositories.security.AuthorityRepository;
+import guru.sfg.brewery.repositories.security.RoleRepository;
 import guru.sfg.brewery.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DefaultSecurityLoader implements CommandLineRunner {
 
     private final UserRepository userRepo;
+    private final RoleRepository  roleRepo;
     private final AuthorityRepository authorityRepo;
     private final PasswordEncoder encoder;
 
@@ -35,32 +37,34 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         ADMIN
     }
 
-    @Transactional
+    private enum AuthorityKeys {
+        BEER_CREATE,
+        BEER_UPDATE,
+        BEER_READ,
+        BEER_DELETE,
+        BREWERY_CREATE,
+        BREWERY_UPDATE,
+        BREWERY_READ,
+        BREWERY_DELETE,
+        CUSTOMER_CREATE,
+        CUSTOMER_UPDATE,
+        CUSTOMER_READ,
+        CUSTOMER_DELETE
+    }
+
     @Override
     public void run(String... args) throws Exception {
 
-        Map<RoleKeys, Authority> authorities = loadAuthorites();
-        loadUser(authorities);
+        Map<AuthorityKeys, Authority> authorities = getAuthorities();
+        Map<RoleKeys, Role> roles = getRoles(authorities);
+        loadUser(roles);
     }
 
-    private Map<RoleKeys, Authority> loadAuthorites() {
+    private void loadUser(final Map<RoleKeys, Role> roles) {
 
-        Map<RoleKeys, Authority> authorities = getAuthorities();
+        if(userRepo.count() == 0 && roles != null && roles.size() > 0) {
 
-        if(authorityRepo.count() == 0) {
-
-            authorityRepo.saveAllAndFlush(authorities.values());
-             
-        }
-
-        return authorities;
-    }
-
-    private void loadUser(final Map<RoleKeys, Authority> authorities) {
-
-        if(userRepo.count() == 0 && authorities != null && authorities.size() > 0) {
-
-            final List<User> users = getUsers(authorities);
+            final List<User> users = getUsers(roles);
 
             userRepo.saveAllAndFlush(users);
 
@@ -69,26 +73,26 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         }
     }
 
-    private List<User> getUsers(final Map<RoleKeys, Authority> authorities) {
+    private List<User> getUsers(final Map<RoleKeys, Role> roles) {
        
         final List<User> users = new ArrayList<>();
 
         final User spring = User.builder()
             .username("spring")
             .password(encoder.encode("pwd"))
-            .authority(authorities.get(RoleKeys.ADMIN))
+            .role(roles.get(RoleKeys.ADMIN))
             .build();
 
         final User user = User.builder()
             .username("user")
             .password(encoder.encode("password"))
-            .authority(authorities.get(RoleKeys.USER))
+            .role(roles.get(RoleKeys.USER))
             .build();
             
         final User scott = User.builder()
             .username("scott")
             .password(encoder.encode("tiger"))
-            .authority(authorities.get(RoleKeys.CUSTOMER))
+            .role(roles.get(RoleKeys.CUSTOMER))
             .build();    
 
         users.add(spring);
@@ -98,18 +102,77 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         return users;
     }
 
-    private Map<RoleKeys, Authority> getAuthorities() {
-        final Map<RoleKeys, Authority> authorities = new HashMap<>();
+    private Map<AuthorityKeys, Authority> getAuthorities() {
+        final Map<AuthorityKeys, Authority> authorities = new HashMap<>();
 
-        final Authority admin = Authority.builder().role("ROLE_ADMIN").build();
-        final Authority user = Authority.builder().role("ROLE_USER").build();
-        final Authority customer = Authority.builder().role("ROLE_CUSTOMER").build();
 
-        authorities.put(RoleKeys.CUSTOMER, customer);
-        authorities.put(RoleKeys.ADMIN,admin);
-        authorities.put(RoleKeys.USER,user);
+        final Authority beer_create = Authority.builder().permission("beer.create").build();
+        final Authority beer_update = Authority.builder().permission("beer.update").build();
+        final Authority beer_read = Authority.builder().permission("beer.read").build();
+        final Authority beer_delete = Authority.builder().permission("beer.delete").build();
+
+        final Authority brewery_create = Authority.builder().permission("brewery.create").build();
+        final Authority brewery_update = Authority.builder().permission("brewery.update").build();
+        final Authority brewery_read = Authority.builder().permission("brewery.read").build();
+        final Authority brewery_delete = Authority.builder().permission("brewery.delete").build();
+
+        final Authority customer_create = Authority.builder().permission("customer.create").build();
+        final Authority customer_update = Authority.builder().permission("customer.update").build();
+        final Authority customer_read = Authority.builder().permission("customer.read").build();
+        final Authority customer_delete = Authority.builder().permission("customer.delete").build();
+
+        authorities.put(AuthorityKeys.BEER_CREATE, beer_create);
+        authorities.put(AuthorityKeys.BEER_UPDATE, beer_update);
+        authorities.put(AuthorityKeys.BEER_READ, beer_read);
+        authorities.put(AuthorityKeys.BEER_DELETE, beer_delete);
+
+        authorities.put(AuthorityKeys.BREWERY_CREATE, brewery_create);
+        authorities.put(AuthorityKeys.BREWERY_UPDATE, brewery_update);
+        authorities.put(AuthorityKeys.BREWERY_READ, brewery_read);
+        authorities.put(AuthorityKeys.BREWERY_DELETE, brewery_delete);
+
+        authorities.put(AuthorityKeys.CUSTOMER_CREATE, customer_create);
+        authorities.put(AuthorityKeys.CUSTOMER_UPDATE, customer_update);
+        authorities.put(AuthorityKeys.CUSTOMER_READ, customer_read);
+        authorities.put(AuthorityKeys.CUSTOMER_DELETE, customer_delete);
 
         return authorities;
+    }
+
+    private Map<RoleKeys, Role> getRoles(final Map<AuthorityKeys, Authority> authorities) {
+        final Map<RoleKeys, Role> roles = new HashMap<>();
+
+        if(authorities != null && !authorities.isEmpty()) {
+
+            final Role admin = Role.builder().name("ROLE_ADMIN").build();
+            final Role user = Role.builder().name("ROLE_USER").build();
+            final Role customer = Role.builder().name("ROLE_CUSTOMER").build();
+
+            admin.setAuthorities(Set.of(authorities.get(AuthorityKeys.BEER_CREATE), 
+                                        authorities.get(AuthorityKeys.BEER_UPDATE), 
+                                        authorities.get(AuthorityKeys.BEER_READ), 
+                                        authorities.get(AuthorityKeys.BEER_DELETE),
+                                        authorities.get(AuthorityKeys.BREWERY_CREATE),
+                                        authorities.get(AuthorityKeys.BREWERY_UPDATE),
+                                        authorities.get(AuthorityKeys.BREWERY_READ),
+                                        authorities.get(AuthorityKeys.BREWERY_DELETE),
+                                        authorities.get(AuthorityKeys.CUSTOMER_CREATE),
+                                        authorities.get(AuthorityKeys.CUSTOMER_UPDATE),
+                                        authorities.get(AuthorityKeys.CUSTOMER_READ),
+                                        authorities.get(AuthorityKeys.CUSTOMER_DELETE)));
+
+            customer.setAuthorities(Set.of(authorities.get(AuthorityKeys.BEER_READ),
+                                           authorities.get(AuthorityKeys.BREWERY_READ),
+                                           authorities.get(AuthorityKeys.CUSTOMER_READ)));
+
+            user.setAuthorities(Set.of(authorities.get(AuthorityKeys.BEER_READ)));
+
+            roles.put(RoleKeys.CUSTOMER, customer);
+            roles.put(RoleKeys.ADMIN,admin);
+            roles.put(RoleKeys.USER,user);
+        }
+
+        return roles;
     }
 
 

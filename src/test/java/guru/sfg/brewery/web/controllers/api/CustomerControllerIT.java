@@ -16,7 +16,7 @@ import org.springframework.test.annotation.Rollback;
 import guru.sfg.brewery.web.controllers.BaseIT;
 
 @SpringBootTest
-public class CuatomerControllerIT extends BaseIT {
+public class CustomerControllerIT extends BaseIT {
     
     @DisplayName("List Customers")
     @Nested
