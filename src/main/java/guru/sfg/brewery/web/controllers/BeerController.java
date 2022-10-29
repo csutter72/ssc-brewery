@@ -38,9 +38,9 @@ import org.springframework.web.servlet.ModelAndView;
 import guru.sfg.brewery.domain.Beer;
 import guru.sfg.brewery.repositories.BeerInventoryRepository;
 import guru.sfg.brewery.repositories.BeerRepository;
-import guru.sfg.brewery.security.params.BeerCreatePermission;
-import guru.sfg.brewery.security.params.BeerReadPermission;
-import guru.sfg.brewery.security.params.BeerUpdatePermission;
+import guru.sfg.brewery.security.annotation.BeerCreatePermission;
+import guru.sfg.brewery.security.annotation.BeerReadPermission;
+import guru.sfg.brewery.security.annotation.BeerUpdatePermission;
 import guru.sfg.brewery.web.model.BeerStyleEnum;
 import lombok.RequiredArgsConstructor;
 

@@ -40,10 +40,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import guru.sfg.brewery.security.params.BeerCreatePermission;
-import guru.sfg.brewery.security.params.BeerDeletePermission;
-import guru.sfg.brewery.security.params.BeerReadPermission;
-import guru.sfg.brewery.security.params.BeerUpdatePermission;
+import guru.sfg.brewery.security.annotation.BeerCreatePermission;
+import guru.sfg.brewery.security.annotation.BeerDeletePermission;
+import guru.sfg.brewery.security.annotation.BeerReadPermission;
+import guru.sfg.brewery.security.annotation.BeerUpdatePermission;
 import guru.sfg.brewery.services.BeerService;
 import guru.sfg.brewery.web.model.BeerDto;
 import guru.sfg.brewery.web.model.BeerPagedList;

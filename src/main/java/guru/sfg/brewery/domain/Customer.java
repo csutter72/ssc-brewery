@@ -16,17 +16,21 @@
  */
 package guru.sfg.brewery.domain;
 
+import java.sql.Timestamp;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
+import guru.sfg.brewery.domain.security.User;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import java.sql.Timestamp;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Created by jt on 2019-01-26.
@@ -47,6 +51,9 @@ public class Customer extends BaseEntity {
     }
 
     private String customerName;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<User> users;
 
     @Column(length = 36, columnDefinition = "varchar")
     private UUID apiKey;

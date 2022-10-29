@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import guru.sfg.brewery.domain.Brewery;
-import guru.sfg.brewery.security.params.BreweryReadPermission;
+import guru.sfg.brewery.security.annotation.BreweryReadPermission;
 import guru.sfg.brewery.services.BreweryService;
 import lombok.RequiredArgsConstructor;
 

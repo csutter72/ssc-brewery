@@ -33,9 +33,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import guru.sfg.brewery.domain.Customer;
 import guru.sfg.brewery.repositories.CustomerRepository;
-import guru.sfg.brewery.security.params.CustomerCreatePermission;
-import guru.sfg.brewery.security.params.CustomerReadPermission;
-import guru.sfg.brewery.security.params.CustomerUpdatePermission;
+import guru.sfg.brewery.security.annotation.CustomerCreatePermission;
+import guru.sfg.brewery.security.annotation.CustomerReadPermission;
+import guru.sfg.brewery.security.annotation.CustomerUpdatePermission;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor

@@ -15,19 +15,18 @@ import guru.sfg.brewery.domain.security.Authority;
 import guru.sfg.brewery.domain.security.Role;
 import guru.sfg.brewery.domain.security.User;
 import guru.sfg.brewery.repositories.security.AuthorityRepository;
-import guru.sfg.brewery.repositories.security.RoleRepository;
 import guru.sfg.brewery.repositories.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-@Order(value=2)
+
 @Slf4j
 @RequiredArgsConstructor
 @Component
+@Order(1)
 public class DefaultSecurityLoader implements CommandLineRunner {
 
     private final UserRepository userRepo;
-    private final RoleRepository  roleRepo;
     private final AuthorityRepository authorityRepo;
     private final PasswordEncoder encoder;
 
@@ -49,7 +48,17 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         CUSTOMER_CREATE,
         CUSTOMER_UPDATE,
         CUSTOMER_READ,
-        CUSTOMER_DELETE
+        CUSTOMER_DELETE,
+        ORDER_CREATE,
+        ORDER_UPDATE,
+        ORDER_READ,
+        ORDER_DELETE,
+        CUSTOMER_ORDER_CREATE,
+        CUSTOMER_ORDER_UPDATE,
+        CUSTOMER_ORDER_READ,
+        CUSTOMER_ORDER_DELETE,
+        ORDER_PICK_UP,
+        CUSTOMER_ORDER_PICK_UP
     }
 
     @Override
@@ -101,7 +110,7 @@ public class DefaultSecurityLoader implements CommandLineRunner {
 
         return users;
     }
-
+    
     private Map<AuthorityKeys, Authority> getAuthorities() {
         final Map<AuthorityKeys, Authority> authorities = new HashMap<>();
 
@@ -121,6 +130,20 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         final Authority customer_read = Authority.builder().permission("customer.read").build();
         final Authority customer_delete = Authority.builder().permission("customer.delete").build();
 
+        final Authority order_create = Authority.builder().permission("order.create").build();
+        final Authority order_update = Authority.builder().permission("order.update").build();
+        final Authority order_read = Authority.builder().permission("order.read").build();
+        final Authority order_delete = Authority.builder().permission("order.delete").build();
+
+        final Authority customer_order_create = Authority.builder().permission("customer.order.create").build();
+        final Authority customer_order_update = Authority.builder().permission("customer.order.update").build();
+        final Authority customer_order_read = Authority.builder().permission("customer.order.read").build();
+        final Authority customer_order_delete = Authority.builder().permission("customer.order.delete").build();
+
+        final Authority order_pick_up = Authority.builder().permission("order.pickup").build();
+        final Authority customer_order_pick_up = Authority.builder().permission("customer.order.pickup").build();
+
+
         authorities.put(AuthorityKeys.BEER_CREATE, beer_create);
         authorities.put(AuthorityKeys.BEER_UPDATE, beer_update);
         authorities.put(AuthorityKeys.BEER_READ, beer_read);
@@ -135,6 +158,19 @@ public class DefaultSecurityLoader implements CommandLineRunner {
         authorities.put(AuthorityKeys.CUSTOMER_UPDATE, customer_update);
         authorities.put(AuthorityKeys.CUSTOMER_READ, customer_read);
         authorities.put(AuthorityKeys.CUSTOMER_DELETE, customer_delete);
+
+        authorities.put(AuthorityKeys.ORDER_CREATE, order_create);
+        authorities.put(AuthorityKeys.ORDER_UPDATE, order_update);
+        authorities.put(AuthorityKeys.ORDER_READ, order_read);
+        authorities.put(AuthorityKeys.ORDER_DELETE, order_delete);
+
+        authorities.put(AuthorityKeys.CUSTOMER_ORDER_CREATE, customer_order_create);
+        authorities.put(AuthorityKeys.CUSTOMER_ORDER_UPDATE, customer_order_update);
+        authorities.put(AuthorityKeys.CUSTOMER_ORDER_READ, customer_order_read);
+        authorities.put(AuthorityKeys.CUSTOMER_ORDER_DELETE, customer_order_delete);
+
+        authorities.put(AuthorityKeys.ORDER_PICK_UP, order_pick_up);
+        authorities.put(AuthorityKeys.CUSTOMER_ORDER_PICK_UP, customer_order_pick_up);
 
         return authorities;
     }
@@ -159,11 +195,21 @@ public class DefaultSecurityLoader implements CommandLineRunner {
                                         authorities.get(AuthorityKeys.CUSTOMER_CREATE),
                                         authorities.get(AuthorityKeys.CUSTOMER_UPDATE),
                                         authorities.get(AuthorityKeys.CUSTOMER_READ),
-                                        authorities.get(AuthorityKeys.CUSTOMER_DELETE)));
+                                        authorities.get(AuthorityKeys.CUSTOMER_DELETE),
+                                        authorities.get(AuthorityKeys.ORDER_CREATE),
+                                        authorities.get(AuthorityKeys.ORDER_UPDATE),
+                                        authorities.get(AuthorityKeys.ORDER_READ),
+                                        authorities.get(AuthorityKeys.ORDER_DELETE),
+                                        authorities.get(AuthorityKeys.ORDER_PICK_UP)));
 
             customer.setAuthorities(Set.of(authorities.get(AuthorityKeys.BEER_READ),
                                            authorities.get(AuthorityKeys.BREWERY_READ),
-                                           authorities.get(AuthorityKeys.CUSTOMER_READ)));
+                                           authorities.get(AuthorityKeys.CUSTOMER_READ),
+                                           authorities.get(AuthorityKeys.CUSTOMER_ORDER_CREATE),
+                                           authorities.get(AuthorityKeys.CUSTOMER_ORDER_UPDATE),
+                                           authorities.get(AuthorityKeys.CUSTOMER_ORDER_READ),
+                                           authorities.get(AuthorityKeys.CUSTOMER_ORDER_DELETE),
+                                           authorities.get(AuthorityKeys.CUSTOMER_ORDER_PICK_UP)));
 
             user.setAuthorities(Set.of(authorities.get(AuthorityKeys.BEER_READ)));
 

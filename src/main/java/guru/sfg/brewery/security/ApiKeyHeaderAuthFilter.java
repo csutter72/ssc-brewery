@@ -7,7 +7,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,6 +35,7 @@ public class ApiKeyHeaderAuthFilter extends OncePerRequestFilter {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if(auth != null && auth.isAuthenticated()) {
             filterChain.doFilter(request, response);
+            return;
         }
  
         String username =  getUsername(request);
@@ -71,7 +71,9 @@ public class ApiKeyHeaderAuthFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         
         //return request.getServletPath().equals("/api/"); 
-        return request.getMethod().equals(HttpMethod.GET.name());
+        //return request.getMethod().equals(HttpMethod.GET.name());
+        return false;
+
     }
 
     private String getPassword(HttpServletRequest request) {

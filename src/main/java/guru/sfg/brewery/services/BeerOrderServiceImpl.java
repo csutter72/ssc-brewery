@@ -17,6 +17,16 @@
 
 package guru.sfg.brewery.services;
 
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import guru.sfg.brewery.domain.BeerOrder;
 import guru.sfg.brewery.domain.Customer;
 import guru.sfg.brewery.domain.OrderStatusEnum;
@@ -27,15 +37,6 @@ import guru.sfg.brewery.web.model.BeerOrderDto;
 import guru.sfg.brewery.web.model.BeerOrderPagedList;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -51,19 +52,33 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         Optional<Customer> customerOptional = customerRepository.findById(customerId);
 
         if (customerOptional.isPresent()) {
-            Page<BeerOrder> beerOrderPage =
-                    beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
+            Page<BeerOrder> beerOrderPage = beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
 
             return new BeerOrderPagedList(beerOrderPage
                     .stream()
                     .map(beerOrderMapper::beerOrderToDto)
-                    .collect(Collectors.toList()), PageRequest.of(
-                    beerOrderPage.getPageable().getPageNumber(),
-                    beerOrderPage.getPageable().getPageSize()),
+                    .collect(Collectors.toList()),
+                    PageRequest.of(
+                            beerOrderPage.getPageable().getPageNumber(),
+                            beerOrderPage.getPageable().getPageSize()),
                     beerOrderPage.getTotalElements());
         } else {
             return null;
         }
+    }
+
+    @Override
+    public BeerOrderPagedList listOrders(Pageable pageable) {
+        Page<BeerOrder> beerOrderPage = beerOrderRepository.findAll(pageable);
+
+        return new BeerOrderPagedList(beerOrderPage
+                .stream()
+                .map(beerOrderMapper::beerOrderToDto)
+                .collect(Collectors.toList()),
+                PageRequest.of(
+                        beerOrderPage.getPageable().getPageNumber(),
+                        beerOrderPage.getPageable().getPageSize()),
+                beerOrderPage.getTotalElements());
     }
 
     @Transactional
@@ -73,7 +88,7 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
         if (customerOptional.isPresent()) {
             BeerOrder beerOrder = beerOrderMapper.dtoToBeerOrder(beerOrderDto);
-            beerOrder.setId(null); //should not be set by outside client
+            beerOrder.setId(null); // should not be set by outside client
             beerOrder.setCustomer(customerOptional.get());
             beerOrder.setOrderStatus(OrderStatusEnum.NEW);
 
@@ -85,13 +100,26 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
             return beerOrderMapper.beerOrderToDto(savedBeerOrder);
         }
-        //todo add exception type
+        // todo add exception type
         throw new RuntimeException("Customer Not Found");
     }
 
     @Override
     public BeerOrderDto getOrderById(UUID customerId, UUID orderId) {
         return beerOrderMapper.beerOrderToDto(getOrder(customerId, orderId));
+    }
+
+
+    @Override
+    public BeerOrderDto getOrderById(UUID orderId) {
+        Optional<BeerOrder> beerOrder = beerOrderRepository.findOrderByIdSecure(orderId);
+
+        if(beerOrder.isPresent()) {
+            return beerOrderMapper.beerOrderToDto(beerOrder.get());
+        } else {
+            // Create a BeerIrderNotFoundException instead
+            throw new RuntimeException("Beer Order Not Found");
+        }
     }
 
     @Override
@@ -102,17 +130,17 @@ public class BeerOrderServiceImpl implements BeerOrderService {
         beerOrderRepository.save(beerOrder);
     }
 
-    private BeerOrder getOrder(UUID customerId, UUID orderId){
+    private BeerOrder getOrder(UUID customerId, UUID orderId) {
         Optional<Customer> customerOptional = customerRepository.findById(customerId);
 
-        if(customerOptional.isPresent()){
+        if (customerOptional.isPresent()) {
             Optional<BeerOrder> beerOrderOptional = beerOrderRepository.findById(orderId);
 
-            if(beerOrderOptional.isPresent()){
+            if (beerOrderOptional.isPresent()) {
                 BeerOrder beerOrder = beerOrderOptional.get();
 
                 // fall to exception if customer id's do not match - order not for customer
-                if(beerOrder.getCustomer().getId().equals(customerId)){
+                if (beerOrder.getCustomer().getId().equals(customerId)) {
                     return beerOrder;
                 }
             }
