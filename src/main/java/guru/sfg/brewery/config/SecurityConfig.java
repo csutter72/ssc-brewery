@@ -63,9 +63,10 @@ public class SecurityConfig {
 
                     .anyRequest().authenticated();  
             })
-            .csrf().disable()
+            .csrf()
+                .ignoringAntMatchers("/h2-comnsole/**", "/api/**")
                 //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-  
+            .and()
             .addFilterBefore(new ApiKeyHeaderAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class)    
             //.addFilterBefore(restHeaderAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class)
             //.addFilterBefore(restParamAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class) 

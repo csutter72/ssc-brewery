@@ -123,6 +123,7 @@ public class BeerController {
     public String initUpdateBeerForm(@PathVariable UUID beerId, Model model) {
         if (beerRepository.findById(beerId).isPresent())
             model.addAttribute("beer", beerRepository.findById(beerId).get());
+            model.addAttribute("beerStyleEnum", BeerStyleEnum.values());
         return "beers/createOrUpdateBeer";
     }
 

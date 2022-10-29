@@ -17,13 +17,13 @@
 
 package guru.sfg.brewery.web.model;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -40,4 +40,5 @@ public class BeerOrderLineDto extends BaseItem {
 
     private UUID beerId;
     private Integer orderQuantity = 0;
+    private Integer quantityAllocated = 0;
 }

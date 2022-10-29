@@ -1,8 +1,10 @@
 package guru.sfg.brewery.web.controllers.api;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Random;
@@ -10,6 +12,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithUserDetails;
 
 import guru.sfg.brewery.domain.Beer;
 import guru.sfg.brewery.repositories.BeerRepository;
@@ -106,6 +109,14 @@ public class BeerRestControllerIT extends BaseIT {
         mockMvc.perform(get("/api/v1/beerUpc/0631234300019")
             .with(httpBasic("spring", "pwd")))
             .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithUserDetails("spring")
+    void processCreationForm() throws Exception{
+        mockMvc.perform(post("/beers/new").with(csrf())
+                .with(httpBasic("spring", "pwd")))
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test
