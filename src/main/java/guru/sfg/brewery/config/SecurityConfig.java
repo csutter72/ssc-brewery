@@ -2,6 +2,7 @@ package guru.sfg.brewery.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -71,8 +72,20 @@ public class SecurityConfig {
             //.addFilterBefore(restHeaderAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class)
             //.addFilterBefore(restParamAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class) 
             //.addFilterBefore(restParamAuthFilter2(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class) 
-            .formLogin()
-            .and()
+            .formLogin(loginConfigurer -> {
+                loginConfigurer
+                    .loginProcessingUrl("/login")
+                    .loginPage("/").permitAll()
+                    .successForwardUrl("/")
+                    .defaultSuccessUrl("/")
+                    .failureUrl("/?error");
+            })
+            .logout(logoutConfigurer -> {
+                logoutConfigurer
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", HttpMethod.GET.toString()))
+                    .logoutSuccessUrl("/?logout").permitAll();
+            })
+            
             .httpBasic();
 
             // h2 consoloe config
