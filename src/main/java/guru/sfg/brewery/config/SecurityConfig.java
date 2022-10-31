@@ -2,16 +2,18 @@ package guru.sfg.brewery.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import guru.sfg.brewery.security.ApiKeyHeaderAuthFilter;
@@ -19,18 +21,18 @@ import guru.sfg.brewery.security.CustomPasswordEncoderFactories;
 import guru.sfg.brewery.security.RestHeaderAuthFilter;
 import guru.sfg.brewery.security.RestParamAuthFilter;
 import guru.sfg.brewery.security.RestParamAuthFilter2;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity //(debug = true)
 //@EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled= true)
 @EnableGlobalMethodSecurity(prePostEnabled= true)
 public class SecurityConfig {
 
-    private AuthenticationManagerBuilder authBuilder;
-    
-    public SecurityConfig(AuthenticationManagerBuilder authBuilder) {
-        this.authBuilder = authBuilder;
-    }
+    private final AuthenticationManagerBuilder authBuilder;
+    private final UserDetailsService userDetailsService;
+    private final PersistentTokenRepository persistenceTokenRepository;
 
     @Bean
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
@@ -45,8 +47,7 @@ public class SecurityConfig {
                 authorize
                     .antMatchers(
                         "/", 
-                        "/webjars/**", 
-                        "/login", 
+                        "/webjars/**",  
                         "/resources/**").permitAll()
                     .antMatchers("/h2-console/**").permitAll()    
                     //.antMatchers("/beers*").permitAll()
@@ -66,7 +67,7 @@ public class SecurityConfig {
             })
             .csrf()
                 .ignoringAntMatchers("/h2-comnsole/**", "/api/**")
-                //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .and()
             .addFilterBefore(new ApiKeyHeaderAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class)    
             //.addFilterBefore(restHeaderAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class)
@@ -74,6 +75,7 @@ public class SecurityConfig {
             //.addFilterBefore(restParamAuthFilter2(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class) 
             .formLogin(loginConfigurer -> {
                 loginConfigurer
+                    
                     .loginProcessingUrl("/login")
                     .loginPage("/").permitAll()
                     .successForwardUrl("/")
@@ -82,11 +84,23 @@ public class SecurityConfig {
             })
             .logout(logoutConfigurer -> {
                 logoutConfigurer
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", HttpMethod.GET.toString()))
+                    .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
                     .logoutSuccessUrl("/?logout").permitAll();
             })
-            
-            .httpBasic();
+            .httpBasic()
+            .and()
+                .rememberMe()
+                    .rememberMeCookieName("remember-me2")
+                    .rememberMeParameter("remember-me2")
+                    .tokenRepository(persistenceTokenRepository)
+                    .userDetailsService(userDetailsService);
+            // .rememberMe()
+            //     .rememberMeCookieName("remember-me2")
+            //     .rememberMeParameter("remember-me2")
+            //     //.tokenValiditySeconds(60)
+            //     .key("sfg-key")
+            //     .userDetailsService(userDetailsService);
+                
 
             // h2 consoloe config
             http.headers().frameOptions().sameOrigin();

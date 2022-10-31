@@ -61,7 +61,7 @@
         <jaxb.version>2.3.1</jaxb.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
+        <org.mapstruct.version>1.5.2.Final</org.mapstruct.version>
         <org.projectlombok.version>1.18.24</org.projectlombok.version>
         <!--Surefire plugin argLine value to suppress UnresolvedMavenProperty -->
         <argLine>--illegal-access=permit</argLine>

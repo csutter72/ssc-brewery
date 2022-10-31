@@ -17,16 +17,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@RequiredArgsConstructor
 public class ApiKeyHeaderAuthFilter extends OncePerRequestFilter {
 
-    private AuthenticationManager authenticationManager;
-
-    public ApiKeyHeaderAuthFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
+    private final AuthenticationManager authenticationManager;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -53,10 +51,10 @@ public class ApiKeyHeaderAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+        final Authentication authToken = new UsernamePasswordAuthenticationToken(username, password);
         
         try {
-            auth = authenticationManager.authenticate(token);
+            auth = authenticationManager.authenticate(authToken);
             successfulAuthentication(auth);
             filterChain.doFilter(request, response);     
 

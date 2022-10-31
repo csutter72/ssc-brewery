@@ -30,7 +30,10 @@
 
 <div class="row" sec:authorize="!isAuthenticated()">
     <div class="col-md-12">
-        <div th:if="${param.error}" class="alert alert-danger">
+        <div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message} == 'User account is locked'" class="alert alert-danger">
+            User Account is locked
+        </div>
+        <div th:if="${session['SPRING_SECURITY_LAST_EXCEPTION']?.message} == 'Bad credentials'" class="alert alert-danger">
             Invalid username or password
         </div>
         <div th:if="${param.logout}" class="alert alert-success">
@@ -42,17 +45,20 @@
             <label for="password">Password: </label>
             <input type="password" id="password" name="password" autofocus="true" autocomplete="off" />
             <input type="submit" value="Log in" />
+            <label for="remember-me">Remember Me</label>
+            <input type="checkbox" id="remember-me" name="remember-me2" />
         </from>
     </div>
 
 </div>
+
+<p th:text="${session['SPRING_SECURITY_LAST_EXCEPTION']}"/>
 
 <div class="row" sec:authorize="isAuthenticated()">
     <div class="col-md-12">
         <p th:text="'Welcome: ' + ${#authentication?.principal?.username}">User</p>
         <p><a th:href="@{/logout}">Logout</a></p>
     </div>
-
 </div>
 
 <br/>
