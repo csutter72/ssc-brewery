@@ -21,6 +21,7 @@ import guru.sfg.brewery.security.CustomPasswordEncoderFactories;
 import guru.sfg.brewery.security.RestHeaderAuthFilter;
 import guru.sfg.brewery.security.RestParamAuthFilter;
 import guru.sfg.brewery.security.RestParamAuthFilter2;
+import guru.sfg.brewery.security.google.Google2faFilter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -33,6 +34,7 @@ public class SecurityConfig {
     private final AuthenticationManagerBuilder authBuilder;
     private final UserDetailsService userDetailsService;
     private final PersistentTokenRepository persistenceTokenRepository;
+    private final Google2faFilter google2faFilter;
 
     @Bean
     public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
@@ -70,6 +72,7 @@ public class SecurityConfig {
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             .and()
             .addFilterBefore(new ApiKeyHeaderAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class)    
+            .addFilterAfter(google2faFilter, UsernamePasswordAuthenticationFilter.class)
             //.addFilterBefore(restHeaderAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class)
             //.addFilterBefore(restParamAuthFilter(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class) 
             //.addFilterBefore(restParamAuthFilter2(authBuilder.getObject()), UsernamePasswordAuthenticationFilter.class) 

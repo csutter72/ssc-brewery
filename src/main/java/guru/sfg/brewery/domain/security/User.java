@@ -99,6 +99,13 @@ public class User  implements UserDetails, CredentialsContainer {
     @UpdateTimestamp
     private Timestamp lastModifiedDate;
 
+    @Builder.Default
+    private Boolean useGoogle2fa = false;
+
+    private String google2faSecret;
+
+    @Transient
+    private Boolean google2faRequired = true;
 
     @Override
     public boolean isAccountNonExpired() {
