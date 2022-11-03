@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -136,6 +137,7 @@ public class BeerRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @CrossOrigin
     @BeerDeletePermission
     @DeleteMapping({"beer/{beerId}"})
     @ResponseStatus(HttpStatus.NO_CONTENT)

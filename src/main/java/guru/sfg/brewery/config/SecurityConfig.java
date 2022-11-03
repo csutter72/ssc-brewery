@@ -1,5 +1,8 @@
 package guru.sfg.brewery.config;
 
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +18,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import guru.sfg.brewery.security.ApiKeyHeaderAuthFilter;
 import guru.sfg.brewery.security.CustomPasswordEncoderFactories;
@@ -41,10 +47,31 @@ public class SecurityConfig {
         return new SecurityEvaluationContextExtension();
     }
 
+    // Global CorsConfig
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        final CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedMethods(Arrays.asList("*"));
+        config.setAllowedOrigins(Collections.singletonList("*"));
+        // config.setAllowedHeaders(Collections.singletonList("*"));
+        // config.setAllowCredentials(true);
+        // config.setMaxAge(3600L);
+        // config.setExposedHeaders(Arrays.asList("Authorization"));
+
+
+        final UrlBasedCorsConfigurationSource configSource = new UrlBasedCorsConfigurationSource();
+        configSource.registerCorsConfiguration("/**", config);
+
+        return configSource;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
        
         http
+            .cors()
+            .and()
             .authorizeRequests(authorize -> {
                 authorize
                     .antMatchers(
@@ -106,7 +133,7 @@ public class SecurityConfig {
                 
 
             // h2 consoloe config
-            http.headers().frameOptions().sameOrigin();
+            //http.headers().frameOptions().sameOrigin();
 
         return http.build();
     }
